@@ -1,0 +1,37 @@
+services:
+  api-db-quiz:
+    container_name: api-db-quiz
+    image: node:18-alpine
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - db-app
+      - db-quiz
+    working_dir: /app
+    volumes:
+      - ./:/app
+    stdin_open: true
+    tty: true
+
+  db-app:
+    container_name: postgres-app
+    image: postgres:15-alpine
+    ports:
+      - '${DB_HOST_PORT_APP}:5432'
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD_APP}
+      - POSTGRES_DB=${DB_NAME_APP}
+
+  db-quiz:
+    container_name: postgres-quiz
+    image: postgres:15-alpine
+    ports:
+      - '${DB_HOST_PORT_QUIZ}:5432'
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD_QUIZ}
+      - POSTGRES_DB=${DB_NAME_QUIZ}
+
+volumes:
+  data:

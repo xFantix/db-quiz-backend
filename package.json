@@ -1,0 +1,30 @@
+{
+  "name": "db-quiz-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "typescript": "^5.2.2"
+  },
+  "scripts": {
+    "start": "node build/index.js",
+    "dev": "yarn && nodemon -L src/index.ts --watch \"src/**/*.{ts,js}\"",
+    "test": "jest --runInBand",
+    "build": "tsc -p tsconfig-build.json",
+    "type-check": "tsc --noEmit",
+    "lint:fix": "eslint --fix \"src/**/*.{ts,js}\"",
+    "lint": "eslint \"src/**/*.{ts,js}\"",
+    "docker:up": "docker-compose up -d && yarn docker:shell",
+    "docker:down": "docker-compose down",
+    "docker:shell": "docker exec -it api-db-quiz sh",
+    "docker:build": "docker build -t docker-express-boilerplate-api ."
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.20",
+    "eslint": "^8.52.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "nodemon": "^3.0.1"
+  }
+}
