@@ -1,6 +1,7 @@
 generator client {
-    provider = "prisma-client-js"
-    output   = ".generated/client-quiz"
+    provider      = "prisma-client-js"
+    output        = ".generated/client-quiz"
+    binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {

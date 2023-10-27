@@ -1,5 +1,8 @@
-import express, { json } from 'express';
+import express, { json, Request, Response, NextFunction } from 'express';
+import AppError from '../errors/appError';
 import cors from 'cors';
+import usersRoute from '../routes/userRoute';
+import { errorMiddleware } from '../middleware/errorMiddleware';
 
 const corsOptions = {
   origin: process.env.CORS_ORIGIN_ALLOWED,
@@ -12,6 +15,10 @@ const createServer = () => {
 
   app.use(json());
   app.use(cors(corsOptions));
+
+  app.use('/user', usersRoute);
+
+  app.use(errorMiddleware);
 
   return app;
 };

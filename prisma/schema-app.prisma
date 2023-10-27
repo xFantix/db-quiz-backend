@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = ".generated/client-app"
+  provider      = "prisma-client-js"
+  output        = "./generated/client-app"
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
@@ -8,11 +9,20 @@ datasource db {
   url      = env("DATABASE_URL_APP")
 }
 
+model GroupQuiz {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  startTimeQuiz DateTime
+  endTimeQuiz   DateTime
+  users         User[]
+}
+
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
   name      String
   surname   String
-  index_umk Int     @unique
+  index_umk Int         @unique
   isAdmin   Boolean
+  group     GroupQuiz[]
 }
