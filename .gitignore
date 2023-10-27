@@ -127,4 +127,7 @@ dist
 data
 
 # Prisma
-generated/
+
+prisma/generated/
+
+
