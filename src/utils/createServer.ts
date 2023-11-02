@@ -1,5 +1,4 @@
-import express, { json, Request, Response, NextFunction } from 'express';
-import AppError from '../errors/appError';
+import express, { json } from 'express';
 import cors from 'cors';
 import usersRoute from '../routes/userRoute';
 import { errorMiddleware } from '../middleware/errorMiddleware';

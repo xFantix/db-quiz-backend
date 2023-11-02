@@ -9,20 +9,26 @@ datasource db {
   url      = env("DATABASE_URL_APP")
 }
 
-model GroupQuiz {
+model Group {
   id            Int      @id @default(autoincrement())
   name          String   @unique
   startTimeQuiz DateTime
   endTimeQuiz   DateTime
   users         User[]
+
+  @@map("group")
 }
 
 model User {
-  id        Int         @id @default(autoincrement())
-  email     String      @unique
+  id        Int     @id @default(autoincrement())
   name      String
+  email     String  @unique
+  password  String
   surname   String
-  index_umk Int         @unique
+  index_umk Int     @unique
   isAdmin   Boolean
-  group     GroupQuiz[]
+  group     Group?  @relation(fields: [groupId], references: [id])
+  groupId   Int
+
+  @@map("user")
 }
