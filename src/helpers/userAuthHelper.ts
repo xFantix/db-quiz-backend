@@ -15,3 +15,7 @@ export const generatePassword = () =>
 export const generateAccessToken = (user: AuthUser) => {
   return jwt.sign(user, `${process.env.JWT_SECRET_KEY}`, { expiresIn: 300 });
 };
+
+export const hashPassword = (password: string) => {
+  return CryptoJS.AES.encrypt(password, `${process.env.SECRET_KEY_AES}`).toString();
+};
