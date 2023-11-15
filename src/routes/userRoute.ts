@@ -7,6 +7,7 @@ const usersRoute = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 usersRoute.post('/register', userControllers.addUser);
+usersRoute.post('/login', userControllers.loginUser);
 usersRoute.post(
   '/registerByCSV',
   verifyTokenAndAdmin,
@@ -14,7 +15,6 @@ usersRoute.post(
   userControllers.registerUsersFromCSVMethod
 );
 usersRoute.get('/', verifyTokenAndAdmin, userControllers.getAllUsers);
-usersRoute.post('/login', userControllers.loginUser);
 usersRoute.get('/:id', verifyTokenAndAuthorization, userControllers.getUserById);
 usersRoute.delete('/:id', verifyTokenAndAdmin, userControllers.removeUser);
 

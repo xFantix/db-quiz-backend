@@ -9,7 +9,7 @@ import {
 } from '../schemas/userSchema';
 import { AuthUser, LoginUser, RefreshToken, RegisterUser } from '../types/user';
 import { processCSV } from '../helpers/csvHelper';
-import { generateAccessToken, generatePassword } from '../helpers/userAuthHelper';
+import { generateAccessToken, generatePassword, hashPassword } from '../helpers/userAuthHelper';
 import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
 
@@ -29,7 +29,7 @@ export const addUserMethod = async (
       data: {
         name,
         surname,
-        password,
+        password: hashPassword(password),
         email,
         index_umk,
         isAdmin: false,
@@ -141,16 +141,16 @@ const loginUserMethod = async (
   });
 
   if (!user)
-    return res.status(201).json({
-      message: 'User not found',
+    return res.status(403).json({
+      message: 'Użytkownik nie istnieje',
     });
 
   const hashedPassword = CryptoJS.AES.decrypt(user.password, `${process.env.SECRET_KEY_AES}`);
   const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
 
   if (originalPassword !== password) {
-    return res.json({
-      message: 'Wrong password',
+    return res.status(403).json({
+      message: 'Niepoprawne hasło',
     });
   }
 
@@ -161,8 +161,7 @@ const loginUserMethod = async (
 
   const { password: passwordUser, ...others } = user;
 
-  return res.status(401).json({
-    message: 'User is logged',
+  return res.status(200).json({
     user: others,
     accessToken,
     refreshToken,
