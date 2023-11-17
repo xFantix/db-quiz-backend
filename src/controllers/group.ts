@@ -8,7 +8,11 @@ const getAllGroupsMethod = async (req: Request, res: Response, next: NextFunctio
   await prisma.group
     .findMany({
       include: {
-        users: true,
+        users: {
+          select: {
+            id: true,
+          },
+        },
       },
     })
     .then((result) => {
