@@ -41,10 +41,7 @@ export const addUserMethod = async (
       },
     })
     .then((data) => {
-      res.status(201).send({
-        message: 'User registered',
-        user: data,
-      });
+      res.status(201).send(data);
     })
     .catch((err) => next(err));
 };
@@ -114,10 +111,7 @@ const registerUsersFromCSVMethod = async (req: Request, res: Response, next: Nex
         skipDuplicates: true,
       })
       .then((data) => {
-        res.status(201).send({
-          message: 'User registered',
-          user: data,
-        });
+        res.status(201).send(data);
       })
       .catch((err) => next(err));
   } else {
@@ -201,7 +195,7 @@ const getUserById = requestMiddleware(getUserByIdMethod, {
 });
 
 const refreshToken = requestMiddleware(refreshTokenMethod, {
-  validation: { query: refreshTokenSchema },
+  validation: { body: refreshTokenSchema },
 });
 
 export const userControllers = {

@@ -7,7 +7,7 @@ export const addUserSchema = Joi.object().keys({
   password: Joi.string().required(),
   index_umk: Joi.number().required(),
   isAdmin: Joi.boolean().required(),
-  idGroup: Joi.number().required(),
+  idGroup: Joi.number(),
 });
 
 export const getUserByIdSchema = Joi.object({ id: Joi.string().required() });
