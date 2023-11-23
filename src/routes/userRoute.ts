@@ -6,7 +6,7 @@ import { verifyTokenAndAdmin, verifyTokenAndAuthorization } from '../middleware/
 const usersRoute = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
-usersRoute.post('/register', userControllers.addUser);
+usersRoute.post('/register', verifyTokenAndAdmin, userControllers.addUser);
 usersRoute.post('/login', userControllers.loginUser);
 usersRoute.post(
   '/registerByCSV',

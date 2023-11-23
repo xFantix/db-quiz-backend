@@ -6,7 +6,7 @@ export interface RegisterUser {
   email: string;
   index_umk: number;
   isAdmin?: boolean;
-  idGroup: number;
+  groupId?: number;
 }
 
 export interface RegisterUserCSV {

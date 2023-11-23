@@ -6,6 +6,8 @@ const groupRoute = Router();
 
 groupRoute.get('/all', verifyTokenAndAuthorization, groupControllers.getAllGroups);
 groupRoute.post('/add', verifyTokenAndAdmin, groupControllers.addGroup);
+groupRoute.post('/email-password/:id', verifyTokenAndAdmin, groupControllers.sendEmailWithPassword);
+groupRoute.post('/email-reminder/:id', verifyTokenAndAdmin, groupControllers.sendReminderMessage);
 groupRoute.delete('/remove/:id', verifyTokenAndAdmin, groupControllers.removeGroup);
 
 export default groupRoute;

@@ -28,7 +28,7 @@ model User {
   index_umk Int     @unique
   isAdmin   Boolean
   group     Group?  @relation(fields: [groupId], references: [id])
-  groupId   Int
+  groupId   Int?
 
   @@map("user")
 }

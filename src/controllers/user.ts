@@ -22,7 +22,7 @@ export const addUserMethod = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { name, surname, email, password, index_umk, idGroup } = req.body;
+  const { name, surname, email, password, index_umk, groupId } = req.body;
 
   await prisma.user
     .create({
@@ -33,15 +33,12 @@ export const addUserMethod = async (
         email,
         index_umk,
         isAdmin: false,
-        group: {
-          connect: {
-            id: idGroup,
-          },
-        },
+        groupId: groupId || null,
       },
     })
     .then((data) => {
-      res.status(201).send(data);
+      const { password, ...rest } = data;
+      res.status(201).send(rest);
     })
     .catch((err) => next(err));
 };
