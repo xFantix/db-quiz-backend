@@ -5,9 +5,11 @@ import { groupControllers } from '../controllers/group';
 const groupRoute = Router();
 
 groupRoute.get('/all', verifyTokenAndAuthorization, groupControllers.getAllGroups);
+groupRoute.get('/:id', verifyTokenAndAuthorization, groupControllers.getGroupById);
 groupRoute.post('/add', verifyTokenAndAdmin, groupControllers.addGroup);
 groupRoute.post('/email-password/:id', verifyTokenAndAdmin, groupControllers.sendEmailWithPassword);
 groupRoute.post('/email-reminder/:id', verifyTokenAndAdmin, groupControllers.sendReminderMessage);
 groupRoute.delete('/remove/:id', verifyTokenAndAdmin, groupControllers.removeGroup);
+groupRoute.delete('/remove-user/:id', verifyTokenAndAdmin, groupControllers.removeUserFromGroup);
 
 export default groupRoute;

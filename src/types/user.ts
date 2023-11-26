@@ -15,7 +15,7 @@ export interface RegisterUserCSV {
   email: string;
   index_umk: string;
   isAdmin?: boolean;
-  idGroup: string;
+  groupId: string;
 }
 
 export interface LoginUser {

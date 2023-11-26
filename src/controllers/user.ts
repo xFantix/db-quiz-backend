@@ -6,6 +6,7 @@ import {
   getUserByIdSchema,
   loginUserSchema,
   refreshTokenSchema,
+  updateUserSchema,
 } from '../schemas/userSchema';
 import { AuthUser, LoginUser, RefreshToken, RegisterUser } from '../types/user';
 import { processCSV } from '../helpers/csvHelper';
@@ -37,7 +38,7 @@ export const addUserMethod = async (
       },
     })
     .then((data) => {
-      const { password, ...rest } = data;
+      const { password, isAdmin, ...rest } = data;
       res.status(201).send(rest);
     })
     .catch((err) => next(err));
@@ -45,7 +46,17 @@ export const addUserMethod = async (
 
 const getAllUsersMethod = async (req: Request, res: Response, next: NextFunction) => {
   await prisma.user
-    .findMany()
+    .findMany({
+      select: {
+        groupId: true,
+        index_umk: true,
+        name: true,
+        surname: true,
+        email: true,
+        id: true,
+        group: true,
+      },
+    })
     .then((result) => {
       res.status(200).json(result);
     })
@@ -96,14 +107,14 @@ const registerUsersFromCSVMethod = async (req: Request, res: Response, next: Nex
 
     await prisma.user
       .createMany({
-        data: usersData.map(({ name, surname, email, index_umk, idGroup }) => ({
+        data: usersData.map(({ name, surname, email, index_umk, groupId }) => ({
           name,
           surname,
           email,
           isAdmin: false,
           password: generatePassword(),
           index_umk: Number(index_umk),
-          groupId: Number(idGroup),
+          groupId: Number(groupId),
         })),
         skipDuplicates: true,
       })
@@ -176,6 +187,28 @@ const refreshTokenMethod = async (
   });
 };
 
+const changeUserDataMethod = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+  const { groupId } = req.body;
+
+  await prisma.user
+    .update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        groupId,
+      },
+    })
+    .then((data) => {
+      const { password, isAdmin, ...rest } = data;
+      res.status(201).json(rest);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 const removeUser = requestMiddleware(removeUserByIdMethod, {
   validation: { query: getUserByIdSchema },
 });
@@ -195,6 +228,10 @@ const refreshToken = requestMiddleware(refreshTokenMethod, {
   validation: { body: refreshTokenSchema },
 });
 
+const changeUserData = requestMiddleware(changeUserDataMethod, {
+  validation: { body: updateUserSchema },
+});
+
 export const userControllers = {
   addUser,
   getAllUsers,
@@ -203,4 +240,5 @@ export const userControllers = {
   loginUser,
   refreshToken,
   removeUser,
+  changeUserData,
 };

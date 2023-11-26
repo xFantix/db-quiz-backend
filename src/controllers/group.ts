@@ -16,6 +16,11 @@ const getAllGroupsMethod = async (req: Request, res: Response, next: NextFunctio
         users: {
           select: {
             id: true,
+            name: true,
+            surname: true,
+            email: true,
+            index_umk: true,
+            groupId: true,
           },
         },
       },
@@ -51,7 +56,7 @@ export const addGroupMethod = async (
       },
     })
     .then((data) => {
-      res.status(201).send(data);
+      res.status(201).json(data);
     })
     .catch((err) => next(err));
 };
@@ -66,7 +71,7 @@ const removeGroupByIdMethod = async (req: Request, res: Response, next: NextFunc
       },
     })
     .then(() => {
-      res.status(201).send({
+      res.status(201).json({
         message: 'Group deleted',
       });
     })
@@ -119,7 +124,7 @@ const sendEmailWithPasswordMethod = async (req: Request, res: Response, next: Ne
     });
   }
 
-  res.status(201).send({
+  res.status(201).json({
     message: 'Wiadomości zostały wysłane',
   });
 };
@@ -167,9 +172,59 @@ const sendReminderMessageMethod = async (req: Request, res: Response, next: Next
     console.log('Preview:', getTestMessageUrl(info));
   }
 
-  res.status(201).send({
+  res.status(201).json({
     message: 'Wiadomości zostały wysłane',
   });
+};
+
+const getGroupByIdMethod = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+
+  await prisma.group
+    .findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        users: {
+          select: {
+            name: true,
+            surname: true,
+            email: true,
+            index_umk: true,
+            groupId: true,
+            id: true,
+          },
+        },
+      },
+    })
+    .then((data) => {
+      res.status(201).json(data);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const removeUserFromGroupMethod = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+
+  await prisma.user
+    .update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        groupId: null,
+      },
+    })
+    .then((data) => {
+      const { password, isAdmin, ...rest } = data;
+      res.status(201).json(rest);
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 const getAllGroups = requestMiddleware(getAllGroupsMethod);
@@ -187,10 +242,20 @@ const sendReminderMessage = requestMiddleware(sendReminderMessageMethod, {
   validation: { query: getGroupByIdSchema },
 });
 
+const getGroupById = requestMiddleware(getGroupByIdMethod, {
+  validation: { query: getGroupByIdSchema },
+});
+
+const removeUserFromGroup = requestMiddleware(removeUserFromGroupMethod, {
+  validation: { query: getGroupByIdSchema },
+});
+
 export const groupControllers = {
   getAllGroups,
   addGroup,
   removeGroup,
   sendEmailWithPassword,
   sendReminderMessage,
+  getGroupById,
+  removeUserFromGroup,
 };

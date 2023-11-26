@@ -14,10 +14,10 @@ usersRoute.post(
   upload.single('file'),
   userControllers.registerUsersFromCSVMethod
 );
-usersRoute.get('/', verifyTokenAndAdmin, userControllers.getAllUsers);
+usersRoute.get('/all', verifyTokenAndAdmin, userControllers.getAllUsers);
 usersRoute.get('/:id', verifyTokenAndAuthorization, userControllers.getUserById);
 usersRoute.delete('/:id', verifyTokenAndAdmin, userControllers.removeUser);
-
+usersRoute.post('/update-user/:id', verifyTokenAndAdmin, userControllers.changeUserData);
 usersRoute.post('/refreshToken', userControllers.refreshToken);
 
 export default usersRoute;

@@ -10,6 +10,10 @@ export const addUserSchema = Joi.object().keys({
   groupId: Joi.number(),
 });
 
+export const updateUserSchema = Joi.object().keys({
+  groupId: Joi.number().required(),
+});
+
 export const getUserByIdSchema = Joi.object({ id: Joi.string().required() });
 
 export const loginUserSchema = Joi.object().keys({
