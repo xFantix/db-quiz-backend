@@ -6,6 +6,7 @@ import { addGroupSchema, getGroupByIdSchema } from '../schemas/groupSchema';
 import { createEmailWithPassword, createEmailWithRemindMessage } from '../helpers/emailHelper';
 import { createTransport, getTestMessageUrl } from 'nodemailer';
 import { format } from 'date-fns';
+import { getUserByIdSchema } from '../schemas/userSchema';
 
 const prisma = new PrismaClientApp();
 
@@ -177,6 +178,45 @@ const sendReminderMessageMethod = async (req: Request, res: Response, next: Next
   });
 };
 
+const sendEmailWithPasswordToUserMethod = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: Number(id),
+    },
+    select: {
+      email: true,
+      password: true,
+    },
+  });
+
+  if (user) {
+    const transporter = createTransport({
+      name: process.env.EMAIL_NAME,
+      host: 'smtp.ethereal.email',
+      port: 587,
+      auth: {
+        user: process.env.EMAIL_ADDRESS,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const emailMessage = createEmailWithPassword(user);
+    const info = await transporter.sendMail(emailMessage);
+    console.log('Message sent: %s', info.messageId, user.email);
+    console.log('Preview:', getTestMessageUrl(info));
+
+    res.status(201).json({
+      message: 'Wiadomości zostały wysłane',
+    });
+  }
+};
+
 const getGroupByIdMethod = async (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
@@ -242,6 +282,10 @@ const sendReminderMessage = requestMiddleware(sendReminderMessageMethod, {
   validation: { query: getGroupByIdSchema },
 });
 
+const sendEmailWithPasswordToUser = requestMiddleware(sendEmailWithPasswordToUserMethod, {
+  validation: { query: getUserByIdSchema },
+});
+
 const getGroupById = requestMiddleware(getGroupByIdMethod, {
   validation: { query: getGroupByIdSchema },
 });
@@ -258,4 +302,5 @@ export const groupControllers = {
   sendReminderMessage,
   getGroupById,
   removeUserFromGroup,
+  sendEmailWithPasswordToUser,
 };
