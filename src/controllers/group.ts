@@ -39,12 +39,13 @@ export const addGroupMethod = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { name, startTimeQuiz, endTimeQuiz } = req.body;
+  const { name, startTimeQuiz, endTimeQuiz, time } = req.body;
 
   await prisma.group
     .create({
       data: {
         name,
+        time,
         startTimeQuiz,
         endTimeQuiz,
       },

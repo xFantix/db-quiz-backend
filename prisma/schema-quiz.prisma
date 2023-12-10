@@ -1,10 +1,14 @@
 generator client {
     provider      = "prisma-client-js"
-    output        = ".generated/client-quiz"
+    output        = "./generated/client-quiz"
     binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
     provider = "postgresql"
-    url      = env("DATABASE_URL_Quiz")
+    url      = env("DATABASE_URL_QUIZ")
+}
+
+model TEST {
+    id Int @id @default(autoincrement())
 }

@@ -14,6 +14,7 @@ model Group {
   name          String   @unique
   startTimeQuiz DateTime
   endTimeQuiz   DateTime
+  time          Int
   users         User[]
 
   @@map("group")
@@ -21,14 +22,26 @@ model Group {
 
 model User {
   id        Int     @id @default(autoincrement())
-  name      String
   email     String  @unique
+  name      String
   password  String
   surname   String
   index_umk Int     @unique
   isAdmin   Boolean
-  group     Group?  @relation(fields: [groupId], references: [id])
   groupId   Int?
+  group     Group?  @relation(fields: [groupId], references: [id])
 
   @@map("user")
+}
+
+model Question {
+  id                  Int          @id @default(autoincrement())
+  questionDescription String
+  questionType        QuestionType
+  answer              String
+}
+
+enum QuestionType {
+  Close
+  Open
 }

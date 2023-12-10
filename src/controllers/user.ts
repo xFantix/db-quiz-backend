@@ -9,7 +9,7 @@ import {
   updateUserSchema,
 } from '../schemas/userSchema';
 import { AuthUser, LoginUser, RefreshToken, RegisterUser } from '../types/user';
-import { processCSV } from '../helpers/csvHelper';
+import { processCSV } from '../helpers/fileHelper';
 import { generateAccessToken, generatePassword, hashPassword } from '../helpers/userAuthHelper';
 import CryptoJS from 'crypto-js';
 import jwt from 'jsonwebtoken';
