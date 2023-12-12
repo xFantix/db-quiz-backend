@@ -49,8 +49,27 @@ const createQuestionMethod = async (
         questionDescription,
       },
     })
+    .then((data) => {
+      res.status(201).json(data);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const removeQuestionByIdMethod = async (req: Request, res: Response, next: NextFunction) => {
+  const { id } = req.params;
+
+  await prisma.question
+    .delete({
+      where: {
+        id: Number(id),
+      },
+    })
     .then(() => {
-      res.status(201).json({ message: 'Pytanie zostało dodane' });
+      res.status(201).json({
+        message: 'Question deleted',
+      });
     })
     .catch((err) => {
       next(err);
@@ -65,8 +84,13 @@ const getQuestionById = requestMiddleware(getQuestionByIdMethod, {
   validation: { query: getQuestionSchema },
 });
 
+const removeQuestionById = requestMiddleware(removeQuestionByIdMethod, {
+  validation: { query: getQuestionSchema },
+});
+
 export const questionController = {
   createQuestion,
   getAllQuestion,
   getQuestionById,
+  removeQuestionById,
 };

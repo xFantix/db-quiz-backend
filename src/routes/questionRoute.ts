@@ -7,5 +7,10 @@ const questionRoute = Router();
 questionRoute.get('/all', verifyTokenAndAuthorization, questionController.getAllQuestion);
 questionRoute.post('/add', verifyTokenAndAuthorization, questionController.createQuestion);
 questionRoute.get('/:id', verifyTokenAndAuthorization, questionController.getQuestionById);
+questionRoute.delete(
+  '/remove/:id',
+  verifyTokenAndAuthorization,
+  questionController.removeQuestionById
+);
 
 export default questionRoute;

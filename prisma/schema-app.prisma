@@ -39,9 +39,12 @@ model Question {
   questionDescription String
   questionType        QuestionType
   answer              String
+
+  @@map("question")
 }
 
 enum QuestionType {
   Close
   Open
+  Request
 }
