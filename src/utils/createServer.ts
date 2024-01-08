@@ -5,6 +5,7 @@ import { errorMiddleware } from '../middleware/errorMiddleware';
 import groupRoute from '../routes/groupRoute';
 import quizDatabaseRoute from '../routes/quizDatabaseRoute';
 import questionRoute from '../routes/questionRoute';
+import userQuizRoute from '../routes/userQuizRoute';
 
 const corsOptions = {
   origin: process.env.CORS_ORIGIN_ALLOWED,
@@ -22,6 +23,7 @@ const createServer = () => {
   app.use('/group', groupRoute);
   app.use('/quiz-database', quizDatabaseRoute);
   app.use('/question', questionRoute);
+  app.use('/user-quiz', userQuizRoute);
 
   app.use(errorMiddleware);
 

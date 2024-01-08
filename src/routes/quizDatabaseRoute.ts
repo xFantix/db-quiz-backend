@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { verifyTokenAndAdmin } from '../middleware/verifyTokenJWT';
+import { verifyTokenAndAdmin, verifyTokenAndAuthorization } from '../middleware/verifyTokenJWT';
 import { quizDatabaseController } from '../controllers/quizDatabase';
 import multer from 'multer';
 
@@ -11,6 +11,11 @@ quizDatabaseRoute.post(
   verifyTokenAndAdmin,
   upload.single('file'),
   quizDatabaseController.createQuizDatabase
+);
+quizDatabaseRoute.post(
+  '/check-request',
+  verifyTokenAndAuthorization,
+  quizDatabaseController.checkRequest
 );
 
 export default quizDatabaseRoute;

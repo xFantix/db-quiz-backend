@@ -10,26 +10,29 @@ datasource db {
 }
 
 model Group {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
+  id            Int        @id @default(autoincrement())
+  name          String     @unique
   startTimeQuiz DateTime
   endTimeQuiz   DateTime
   time          Int
   users         User[]
+  questions     Question[]
 
   @@map("group")
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  name      String
-  password  String
-  surname   String
-  index_umk Int     @unique
-  isAdmin   Boolean
-  groupId   Int?
-  group     Group?  @relation(fields: [groupId], references: [id])
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  name       String
+  password   String
+  surname    String
+  index_umk  Int       @unique
+  isAdmin    Boolean
+  groupId    Int?
+  group      Group?    @relation(fields: [groupId], references: [id])
+  userQuiz   UserQuiz? @relation(fields: [userQuizId], references: [id])
+  userQuizId Int?      @unique
 
   @@map("user")
 }
@@ -39,8 +42,30 @@ model Question {
   questionDescription String
   questionType        QuestionType
   answer              String
+  group               Group[]
 
   @@map("question")
+}
+
+model UserQuiz {
+  id        Int          @id @default(autoincrement())
+  startQuiz DateTime
+  isOpen    Boolean
+  points    Int
+  counter   Int
+  answers   UserAnswer[]
+  user      User?
+
+  @@map("userQuiz")
+}
+
+model UserAnswer {
+  id         Int      @id @default(autoincrement())
+  answer     String
+  UserQuiz   UserQuiz @relation(fields: [userQuizId], references: [id])
+  userQuizId Int
+
+  @@map("userAnswer")
 }
 
 enum QuestionType {

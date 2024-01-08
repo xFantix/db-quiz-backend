@@ -2,7 +2,12 @@ import { NextFunction, Request, Response } from 'express';
 import { PrismaClient as PrismaClientApp } from '../../prisma/generated/client-app';
 import { Question } from '../types/question';
 import { requestMiddleware } from '../middleware/schemaMiddleware';
-import { addQuestionSchema, getQuestionSchema } from '../schemas/questionSchema';
+import {
+  addQuestionSchema,
+  addQuestionToGroupSchema,
+  getQuestionSchema,
+} from '../schemas/questionSchema';
+import { AddQuestion } from '../types/group';
 
 const prisma = new PrismaClientApp();
 

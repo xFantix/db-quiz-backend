@@ -4,3 +4,8 @@ export interface AddGroup {
   startTimeQuiz: string;
   endTimeQuiz: string;
 }
+
+export interface AddQuestion {
+  groupId: number;
+  questionId: number;
+}

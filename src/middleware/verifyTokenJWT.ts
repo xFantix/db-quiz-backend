@@ -23,7 +23,7 @@ export const verifyTokenAndAuthorization = (
   next: NextFunction
 ) => {
   verifyTokenJWT(req, res, () => {
-    if (req.user?.id === req.params.id || req.user?.isAdmin) {
+    if (req.user?.id || req.user?.isAdmin) {
       next();
     } else {
       res.status(403).json({

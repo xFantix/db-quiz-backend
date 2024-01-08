@@ -1,12 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
 import { PrismaClient as PrismaClientApp } from '../../prisma/generated/client-app';
 import { requestMiddleware } from '../middleware/schemaMiddleware';
-import { AddGroup } from '../types/group';
+import { AddGroup, AddQuestion } from '../types/group';
 import { addGroupSchema, getGroupByIdSchema } from '../schemas/groupSchema';
 import { createEmailWithPassword, createEmailWithRemindMessage } from '../helpers/emailHelper';
 import { createTransport, getTestMessageUrl } from 'nodemailer';
 import { format } from 'date-fns';
 import { getUserByIdSchema } from '../schemas/userSchema';
+import { addQuestionToGroupSchema } from '../schemas/questionSchema';
+import { IGetUserAuthInfoRequest } from '../types/user';
 
 const prisma = new PrismaClientApp();
 
@@ -218,25 +220,45 @@ const sendEmailWithPasswordToUserMethod = async (
   }
 };
 
-const getGroupByIdMethod = async (req: Request, res: Response, next: NextFunction) => {
+const getGroupByIdMethod = async (
+  req: IGetUserAuthInfoRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const { id } = req.params;
+
+  if (req.user?.isAdmin) {
+    return await prisma.group
+      .findUnique({
+        where: {
+          id: Number(id),
+        },
+        include: {
+          questions: true,
+          users: {
+            select: {
+              name: true,
+              surname: true,
+              email: true,
+              index_umk: true,
+              groupId: true,
+              id: true,
+            },
+          },
+        },
+      })
+      .then((data) => {
+        res.status(201).json(data);
+      })
+      .catch((err) => {
+        next(err);
+      });
+  }
 
   await prisma.group
     .findUnique({
       where: {
         id: Number(id),
-      },
-      include: {
-        users: {
-          select: {
-            name: true,
-            surname: true,
-            email: true,
-            index_umk: true,
-            groupId: true,
-            id: true,
-          },
-        },
       },
     })
     .then((data) => {
@@ -267,6 +289,82 @@ const removeUserFromGroupMethod = async (req: Request, res: Response, next: Next
       next(err);
     });
 };
+
+const addQuestionToGroupMethod = async (
+  req: Request<{}, {}, AddQuestion>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { groupId, questionId } = req.body;
+
+  await prisma.group
+    .update({
+      where: {
+        id: Number(groupId),
+      },
+      data: {
+        questions: {
+          connect: {
+            id: Number(questionId),
+          },
+        },
+      },
+    })
+    .then(() => {
+      res.status(201).json({ message: 'Dodano pytanie' });
+    });
+};
+
+const removeQuestionFromGroupMethod = async (
+  req: Request<{}, {}, AddQuestion>,
+  res: Response,
+  next: NextFunction
+) => {
+  const { groupId, questionId } = req.body;
+
+  await prisma.group
+    .update({
+      where: {
+        id: Number(groupId),
+      },
+      data: {
+        questions: {
+          disconnect: {
+            id: Number(questionId),
+          },
+        },
+      },
+    })
+    .then(() => {
+      res.status(201).json({ message: 'Usunieto pytanie' });
+    });
+};
+
+const getUserGroups = async (req: IGetUserAuthInfoRequest, res: Response, next: NextFunction) => {
+  await prisma.user
+    .findUnique({
+      where: {
+        id: Number(req?.user?.id),
+      },
+      select: {
+        group: true,
+      },
+    })
+    .then((result) => {
+      res.status(200).json([result?.group]);
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const removeQuestionFromGroup = requestMiddleware(removeQuestionFromGroupMethod, {
+  validation: { body: addQuestionToGroupSchema },
+});
+
+const addQuestionToGroup = requestMiddleware(addQuestionToGroupMethod, {
+  validation: { body: addQuestionToGroupSchema },
+});
 
 const getAllGroups = requestMiddleware(getAllGroupsMethod);
 const addGroup = requestMiddleware(addGroupMethod, {
@@ -304,4 +402,7 @@ export const groupControllers = {
   getGroupById,
   removeUserFromGroup,
   sendEmailWithPasswordToUser,
+  addQuestionToGroup,
+  removeQuestionFromGroup,
+  getUserGroups,
 };
