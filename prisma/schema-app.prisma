@@ -55,6 +55,8 @@ model UserQuiz {
   counter   Int
   answers   UserAnswer[]
   user      User?
+  isLast    Boolean
+  userId    Int
 
   @@map("userQuiz")
 }
